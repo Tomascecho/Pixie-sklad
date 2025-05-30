@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nový příjem – Pixie™</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { color: #222; }
+    label { display: block; margin-top: 10px; }
+    input, select, button { padding: 8px; margin-top: 5px; width: 100%; }
+    #preview { margin-top: 20px; }
+    .btn-back { margin-top: 20px; display: inline-block; text-decoration: none; color: #333; border: 1px solid #ccc; padding: 6px 12px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>📦 Nový příjem</h1>
+
+  <label for="kod">Kód z čárového/QR kódu:</label>
+  <input type="text" id="kod" placeholder="Skenuj nebo napiš...">
+  <button onclick="startScanner()">📷 Skenovat kód</button>
+
+  <label for="vyrobce">Výrobce:</label>
+  <input type="text" id="vyrobce">
+
+  <label for="barva">Barva:</label>
+  <input type="text" id="barva">
+
+  <label for="material">Materiál:</label>
+  <input type="text" id="material">
+
+  <label for="delka">Délka (m):</label>
+  <input type="number" id="delka">
+
+  <button onclick="odeslat()">➕ Přidat</button>
+
+  <div id="preview"></div>
+
+  <a href="index.html" class="btn-back">🔙 Zpět</a>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+  <script>
+    function startScanner() {
+      const preview = document.getElementById("preview");
+      preview.innerHTML = "";
+      const div = document.createElement("div");
+      div.id = "reader";
+      preview.appendChild(div);
+
+      const html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+          html5QrCode.stop();
+          document.getElementById("kod").value = decodedText;
+
+          try {
+            const [vyrobce, barva, material] = decodedText.split(";");
+            document.getElementById("vyrobce").value = vyrobce;
+            document.getElementById("barva").value = barva;
+            document.getElementById("material").value = material;
+          } catch (e) {
+            preview.innerHTML = "";
+          }
+        },
+        (errorMessage) => {
+          // Chyby ignorujeme
+        }
+      ).catch(err => {
+        preview.innerHTML = "<p style='color:red;'>Nepodařilo se spustit kameru: " + err + "</p>";
+      });
+    }
+
+    function odeslat() {
+      alert("Hotovo! Tady by se odeslal příjem do tabulky.");
+    }
+  </script>
+</body>
+</html>
