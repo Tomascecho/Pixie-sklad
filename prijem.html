@@ -40,6 +40,31 @@
 
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script>
+function startScanner() {
+    const preview = document.getElementById("preview");
+    preview.innerHTML = "";
+
+    const html5QrCode = new Html5Qrcode("preview");
+    const qrConfig = { fps: 10, qrbox: 250 };
+
+    html5QrCode.start(
+        { facingMode: "environment" },
+        qrConfig,
+        (decodedText) => {
+            document.getElementById("kod").value = decodedText;
+            html5QrCode.stop().then(() => {
+                preview.innerHTML = "";
+            });
+        },
+        (error) => {
+            // Ignorujeme chyby při čtení
+        }
+    ).catch((err) => {
+        preview.innerHTML = `<p style="color:red;">Nepodařilo se spustit kameru: ${err}</p>`;
+    });
+}
+</script>
+  <script>
     function startScanner() {
       const preview = document.getElementById("preview");
       preview.innerHTML = "";
